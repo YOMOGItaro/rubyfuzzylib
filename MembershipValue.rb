@@ -10,6 +10,14 @@ class MembershipValue
     @value = value
   end
 
+  def self.zero
+    new(0)
+  end
+
+  def infimum(other)
+    min(self.value, other.value)
+  end
+
   def +(other)    
     new_value = min(@value + other.value, 0)
     MembershipValue.new(new_value)

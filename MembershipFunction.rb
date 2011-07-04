@@ -28,23 +28,47 @@ class MembershipFunction
   def or!(rhs)
     self = self.or(rhs)
   end
+
+  def to_membership_function_valued
+    ret = MembershipFunctionValued.new
+    
+    PARTITIONED_ELEMENT_NUMBER.each(0){ |iter|
+      ret.set_at(iter, self.call(iter))
+    }
+    
+    ret
+  end
 end
 
 class MembershipFunctionValued < MembershipFunction
+  attr_reader :values
+  
   @values
 
-  def initialize
-    @values = Array.new(PARTITIONED_ELEMENT_NUMBER, 0)
+  def initialize(values)
+    @values = values
   end
 
   def self.zero
-    @values = Array.new(PARTITIONED_ELEMENT_NUMBER, 0)
-    self
+    new(Array.new(PARTITIONED_ELEMENT_NUMBER, MembershipValue.zero))
   end
 
-  def set_at
+  def set_at(index, value)
+    @values[index] = value
+  end
+
+  def infimum(other)
+    ret = MembershipFunctionValued.zero
+
+    ret.each_index{ |iter|
+      new_value = self.values[iter].infimum(other.values[iter])
+      ret.set_at(iter, new_value)
+    }
+
+    ret
   end
 end
+
 
 class MembershipFunctionZero < MembershipFunction
   def initialize
