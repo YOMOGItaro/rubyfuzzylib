@@ -1,6 +1,8 @@
 
 
 class MembershipFunction
+  @name
+  
   def self.zero
     MembershipFunctionZero.new
   end
