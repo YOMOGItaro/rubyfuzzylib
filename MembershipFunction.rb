@@ -28,8 +28,9 @@ class MembershipFunction
   def to_s
     ret = String.new
     PARTITIONED_ELEMENT_NUMBER.times{ |idx|
-      ret += call(idx).to_s
+      ret += idx.to_s + " : " + call(idx).to_s + "\n"
     }
+    ret
   end
 
   def partition_range
