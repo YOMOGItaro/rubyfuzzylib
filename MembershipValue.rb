@@ -23,5 +23,9 @@ class MembershipValue
     new_value = min(@value + other.value, 0)
     MembershipValue.new(new_value)
   end
+
+  def to_s
+    @value.to_s
+  end
   
 end

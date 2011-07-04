@@ -4,12 +4,17 @@ class MembershipFunction
   PARTITIONED_ELEMENT_NUMBER = 256
 
   @name
-  @range
+  @min_arg
+  @max_arg
   
   
-  def initialize(name, range)
+  def initialize(
+                 name,
+                 min_arg = MembershipValue::VALUE_MIN,
+                 max_arg = MembershipValue::VALUE_MAX)
     @name = name
-    @range = range
+    @min_arg = min_arg
+    @max_arg = max_arg
   end
   
   def self.zero
@@ -20,6 +25,25 @@ class MembershipFunction
     MembershipFunctionValued.zero
   end
 
+  def to_s
+    ret = String.new
+    PARTITIONED_ELEMENT_NUMBER.times{ |idx|
+      ret += call(idx).to_s
+    }
+  end
+
+  def partition_range
+    (@max_arg - @min_arg).to_f / MembershipFunction::PARTITIONED_ELEMENT_NUMBER
+  end
+
+  def to_idx_from_arg(x)
+    ((x - @min_arg) / partition_range).to_i
+  end
+
+  def at(x)
+    call(to_idx_from_arg(x))
+  end
+  
   def centroid
     waited_area / area
   end
@@ -61,7 +85,15 @@ class MembershipFunctionTrapezoid < MembershipFunction
   @right_top
   @right_bottom
 
-  def initialize(left_bottom, left_top, right_top, right_bottom)
+  def initialize(left_bottom,
+                 left_top,
+                 right_top,
+                 right_bottom,
+                 name = "",
+                 min_arg = MembershipValue::VALUE_MIN,
+                 max_arg = MembershipValue::VALUE_MAX)
+    super(name, min_arg, max_arg)
+    
     @left_bottom = left_bottom
     @left_top = left_top
     @right_top = right_top
@@ -92,9 +124,13 @@ class MembershipFunctionValued < MembershipFunction
   
   @values
 
-  def initialize(name, range, values)
+  def initialize(values,
+                 name = "",
+                 min_arg = MembershipValue::VALUE_MIN,
+                 max_arg = MembershipValue::VALUE_MAX)
+    super(name, min_arg, max_arg)
+
     @name = name
-    @range = range
     @values = values
   end
 
@@ -106,7 +142,7 @@ class MembershipFunctionValued < MembershipFunction
   end
 
   def self.zero
-    new("hello", 0..255, Array.new(PARTITIONED_ELEMENT_NUMBER, MembershipValue.zero))
+    new(Array.new(PARTITIONED_ELEMENT_NUMBER, MembershipValue.zero))
   end
 
   def set_at(index, value)
@@ -122,6 +158,10 @@ class MembershipFunctionValued < MembershipFunction
     }
 
     ret
+  end
+
+  def call(x)
+    @values[x]
   end
 end
 
@@ -146,8 +186,11 @@ end
 
 
 if __FILE__ == $0
-  mft1 = MembershipFunctionTrapezoid.new(30,100,100,200)
+  mft1 = MembershipFunctionTrapezoid.new(30,100,100,200,"",2.0,20.5)
   mft2 = MembershipFunctionTrapezoid.new(1,50,50,100)
+
+  print mft1.to_membership_function_valued
+  p mft1.at(10)
   
-  p mft1.infimum(mft2)
+  #p mft1.infimum(mft2)
 end
