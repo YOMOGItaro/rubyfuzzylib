@@ -145,7 +145,9 @@ class MembershipFunctionZero < MembershipFunction
 end
 
 
-
-mft1 = MembershipFunctionTrapezoid.new(30,100,100,200)
-mft2 = MembershipFunctionTrapezoid.new(1,50,50,100)
-p mft1.infimum(mft2)
+if __FILE__ == $0
+  mft1 = MembershipFunctionTrapezoid.new(30,100,100,200)
+  mft2 = MembershipFunctionTrapezoid.new(1,50,50,100)
+  
+  p mft1.infimum(mft2)
+end
