@@ -1,7 +1,8 @@
 class MembershipValue
-  MEMBERSHIP_VALUE_MIN = 0
-  MEMBERSHIP_VALUE_MAX = 255
-
+  VALUE_MIN = 0
+  VALUE_MAX = 255
+  VALUE_DIFF = VALUE_MAX - VALUE_MIN
+  
   attr_reader :value
   
   @value
@@ -15,7 +16,7 @@ class MembershipValue
   end
 
   def infimum(other)
-    min(self.value, other.value)
+    [self.value, other.value].min
   end
 
   def +(other)    

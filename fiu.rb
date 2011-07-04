@@ -8,7 +8,6 @@
 
 
 class FuzzyInferenceUnit
-  PARTITIONED_ELEMENT_NUMBER = 256
   
   @antecedent_fuzzy_set1
   @antecedent_fuzzy_set2
