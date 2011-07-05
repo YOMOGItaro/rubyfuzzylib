@@ -16,13 +16,15 @@ class MembershipValue
   end
 
   def infimum(other)
-    new_value = [self.value, other.value].min
-    MembershipValue.new(new_value)
+    #new_value = [self.value, other.value].min
+    #MembershipValue.new(new_value)
+    [self, other].min
   end
 
   def supremum(other)
-    new_value = [self.value, other.value].max
-    MembershipValue.new(new_value)
+    #new_value = [self.value, other.value].max
+    #MembershipValue.new(new_value)
+    [self, other].max
   end
 
   def +(other)    

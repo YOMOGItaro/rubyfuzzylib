@@ -6,6 +6,7 @@
   
 =end
 
+require 'MembershipFunction.rb'
 
 class FuzzyInferenceUnit
   
@@ -26,9 +27,24 @@ class FuzzyInferenceUnit
     @consequent_fuzzy_set = consequent_fuzzy_set
   end
 
+  def to_gnuplot_data
+    ret = ""
+    
+    MembershipFunction::PARTITIONED_ELEMENT_NUMBER.times{ |idx1|
+      MembershipFunction::PARTITIONED_ELEMENT_NUMBER.times{ |idx2|
+        ret += idx1.to_s + " ";
+        ret += idx2.to_s + " ";
+        ret += call(idx1, idx2).to_s + " ";
+        ret += "\n"
+      }
+    }
+
+    return ret
+  end
+
   def call(x1, x2)
     omf = output_membership_function(x1, x2)
-    omf.centroid # TODO 0 div
+    omf.centroid
   end
 
   def output_membership_function(x1, x2)
@@ -68,40 +84,48 @@ end
 
 
 if __FILE__ == $0
+  require 'yaml'
+
   require 'FuzzySet.rb'
   require 'FuzzyConditionalProposition.rb'
   require 'MembershipFunction.rb'
 
-  ct = {
-    "low" => { "low" => "low", "mid" => "low", "top" => "mid"},
-    "mid" => { "low" => "low", "mid" => "mid", "top" => "mid"},
-    "top" => { "low" => "mid", "mid" => "top", "top" => "top"}
-  }
-  fcp = FuzzyConditionalProposition.new(ct)
 
-  mfs1 = { 
-  "low" => MembershipFunctionTrapezoid.new(  1, 50, 50,100, "low"),
-  "mid" => MembershipFunctionTrapezoid.new( 50,100,100,150, "mid"),
-  "top" => MembershipFunctionTrapezoid.new(100,150,150,200, "top")
-  }
-  fs1 = FuzzySet.new("hoge", mfs1)
+  # ct = {
+  #   "low" => { "low" => "low", "mid" => "low", "top" => "mid"},
+  #   "mid" => { "low" => "low", "mid" => "mid", "top" => "mid"},
+  #   "top" => { "low" => "mid", "mid" => "top", "top" => "top"}
+  # }
+  # fcp = FuzzyConditionalProposition.new(ct)
 
-
-  mfs2 = {
-  "low" => MembershipFunctionTrapezoid.new(  1, 50, 50,100, "low"),
-  "mid" => MembershipFunctionTrapezoid.new( 50,100,100,150, "mid"),
-  "top" => MembershipFunctionTrapezoid.new(100,150,150,200, "top")
-  }
-  fs2 = FuzzySet.new("pero", mfs2)
+  # mfs1 = { 
+  #   "low" => MembershipFunctionTrapezoid.new(  1, 10, 10, 20, "low"),
+  #   "mid" => MembershipFunctionTrapezoid.new( 15, 20, 20, 25, "mid"),
+  #   "top" => MembershipFunctionTrapezoid.new( 20, 25, 25,32, "top")
+  # }
+  # fs1 = FuzzySet.new("hoge", mfs1)
 
 
-  cmfs = {
-  "low" => MembershipFunctionTrapezoid.new(  1, 50, 50,100, "low"),
-  "mid" => MembershipFunctionTrapezoid.new( 50,100,100,150, "mid"),
-  "top" => MembershipFunctionTrapezoid.new(100,150,150,200, "top")
-  }
-  cfs = FuzzySet.new("ushiro", cmfs)
+  # mfs2 = {
+  #   "low" => MembershipFunctionTrapezoid.new(  1, 10, 10, 20, "low"),
+  #   "mid" => MembershipFunctionTrapezoid.new( 15, 20, 20, 25, "mid"),
+  #   "top" => MembershipFunctionTrapezoid.new( 20, 25, 25,32, "top")
+  # }
+  # fs2 = FuzzySet.new("pero", mfs2)
 
-  fiu = FuzzyInferenceUnit.new(fs1, fs2, fcp, cfs)
-  p fiu.call(50, 100)
+
+  # cmfs = {
+  #   "low" => MembershipFunctionTrapezoid.new(  1, 10, 10, 20, "low"),
+  #   "mid" => MembershipFunctionTrapezoid.new( 15, 20, 20, 25, "mid"),
+  #   "top" => MembershipFunctionTrapezoid.new( 20, 25, 25,32, "top")
+  # }
+  # cfs = FuzzySet.new("ushiro", cmfs)
+
+  # fiu = FuzzyInferenceUnit.new(fs1, fs2, fcp, cfs)
+  # YAML.dump(fiu, File.open('fiu_sample.yaml', 'w'))
+  
+  fiu = YAML.load_file('fiu_sample.yaml')
+  #p fiu.call(50, 100)
+  fiu.to_gnuplot_data
+
 end

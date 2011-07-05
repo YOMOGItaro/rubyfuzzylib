@@ -1,7 +1,7 @@
 require 'MembershipValue.rb'
 
 class MembershipFunction
-  PARTITIONED_ELEMENT_NUMBER = 256
+  PARTITIONED_ELEMENT_NUMBER = 64
 
   @name
   @min_arg
@@ -78,33 +78,25 @@ class MembershipFunction
   end
 
   def infimum(other)
-    self_valued = self.to_membership_function_valued
-    other_valued = other.to_membership_function_valued
+    #self_valued = self.to_membership_function_valued
+    #other_valued = other.to_membership_function_valued
     ret = MembershipFunctionValued.zero
 
     ret.values.each_index{ |idx|
-      ret.values[idx] = self_valued.values[idx].infimum(other_valued.values[idx])
+      #ret.values[idx] = self_valued.values[idx].infimum(other_valued.values[idx])
+      ret.values[idx] = self.call(idx).infimum(other.call(idx))
     }
 
     return ret
   end
 
   def supremum(other)
-    self_valued = self.to_membership_function_valued
-    other_valued = other.to_membership_function_valued
+    #self_valued = self.to_membership_function_valued
+    #other_valued = other.to_membership_function_valued
     ret = MembershipFunctionValued.zero
 
     ret.values.each_index{ |idx|
-      ret.values[idx] = self_valued.values[idx].supremum(other_valued.values[idx])
-    }
-
-    return ret
-  end
-
-  def alpha_cut(alpha)
-    ret = MembershipFunctionValued.zero
-        PARTITIONED_ELEMENT_NUMBER.times{ |iter|
-      ret.set_at(iter, [self.call(iter), alpha].min)
+      ret.values[idx] = self.call(idx).supremum(other.call(idx))
     }
 
     return ret
