@@ -40,6 +40,12 @@ class FuzzySet
 
     return ret
   end
+
+  def valued!
+    @membership_functions.each{ |key, v|
+      @membership_functions[key] = v.to_membership_function_valued
+    }
+  end
   
   def reference(label)
     @membership_functions[label]

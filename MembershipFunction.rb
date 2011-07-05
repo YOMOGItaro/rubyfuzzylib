@@ -1,7 +1,7 @@
 require 'MembershipValue.rb'
 
 class MembershipFunction
-  PARTITIONED_ELEMENT_NUMBER = 64
+  PARTITIONED_ELEMENT_NUMBER = 32
 
   @name
   @min_arg
@@ -112,7 +112,7 @@ class MembershipFunction
   end
  
   def to_membership_function_valued
-    ret = MembershipFunctionValued.zero
+    ret = MembershipFunctionValued.zero(@name, @min_arg, @max_arg)
     
     PARTITIONED_ELEMENT_NUMBER.times{ |iter|
       ret.set_at(iter, self.call(iter))
@@ -184,8 +184,10 @@ class MembershipFunctionValued < MembershipFunction
     }
   end
 
-  def self.zero
-    new(Array.new(PARTITIONED_ELEMENT_NUMBER, MembershipValue.zero))
+  def self.zero(name = "zero",
+                min_arg = MembershipValue::VALUE_MIN,
+                max_arg = MembershipValue::VALUE_MAX)
+    new(Array.new(PARTITIONED_ELEMENT_NUMBER, MembershipValue.zero), name, min_arg, max_arg)
   end
 
   def set_at(index, value)

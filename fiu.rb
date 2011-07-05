@@ -1,4 +1,4 @@
-# -*- coding: undecided -*-
+# -*- coding: utf-8 -*-
 =begin rdoc
   2011/07/04
   YOMOGI
@@ -27,6 +27,12 @@ class FuzzyInferenceUnit
     @consequent_fuzzy_set = consequent_fuzzy_set
   end
 
+  def valued!
+    @antecedent_fuzzy_set1.valued!
+    @antecedent_fuzzy_set2.valued!
+    @consequent_fuzzy_set.valued!
+  end
+
   def to_gnuplot_data
     ret = ""
     
@@ -49,7 +55,10 @@ class FuzzyInferenceUnit
 
   def output_membership_function(x1, x2)
     ret = MembershipFunction.valued_zero
-    
+
+    # TODO
+    # すべてのルールに対してアルファカットを行っているが
+    # 各後件部に1回だけアルファカットすればいい
     each_membership_function_couple{ |amf1, amf2, cmf| 
       alpha = [amf1.call(x1), amf2.call(x2)].min
       ret = ret.supremum(cmf.alpha_cut(alpha))
@@ -83,7 +92,7 @@ end
 
 
 
-if __FILE__ == $0
+#if __FILE__ == $0
   require 'yaml'
 
   require 'FuzzySet.rb'
@@ -124,8 +133,10 @@ if __FILE__ == $0
   # fiu = FuzzyInferenceUnit.new(fs1, fs2, fcp, cfs)
   # YAML.dump(fiu, File.open('fiu_sample.yaml', 'w'))
   
-  fiu = YAML.load_file('fiu_sample.yaml')
-  #p fiu.call(50, 100)
-  fiu.to_gnuplot_data
+fiu = YAML.load_file('fiu_sample.yaml')
+fiu.valued!
 
-end
+#p fiu.call(50, 100)
+fiu.to_gnuplot_data
+
+#end
