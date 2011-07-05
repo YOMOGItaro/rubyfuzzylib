@@ -21,6 +21,5 @@ if __FILE__ == $0
   }
   
   fcp = FuzzyConditionalProposition.new(ct)
-  p fcp.reference("top", "mid")
   
 end

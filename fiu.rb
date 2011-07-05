@@ -32,11 +32,11 @@ class FuzzyInferenceUnit
   end
 
   def output_membership_function(x1, x2)
-    ret = MembershipFunction.zero
+    ret = MembershipFunction.valued_zero
     
     each_membership_function_couple{ |amf1, amf2, cmf| 
-      alpha = min(amf1.call(x1), amf2.call(x2))
-      ret.or!(cmf.alpha_cut(alpha))
+      alpha = [amf1.call(x1), amf2.call(x2)].min
+      ret = ret.supremum(cmf.alpha_cut(alpha))
     }
 
     ret
@@ -69,7 +69,8 @@ end
 
 if __FILE__ == $0
   require 'FuzzySet.rb'
-  require 'FuzzyConditonalProposition.rb'
+  require 'FuzzyConditionalProposition.rb'
+  require 'MembershipFunction.rb'
 
   ct = {
     "low" => { "low" => "low", "mid" => "low", "top" => "mid"},
@@ -78,6 +79,29 @@ if __FILE__ == $0
   }
   fcp = FuzzyConditionalProposition.new(ct)
 
-  
-  
+  mfs1 = { 
+  "low" => MembershipFunctionTrapezoid.new(  1, 50, 50,100, "low"),
+  "mid" => MembershipFunctionTrapezoid.new( 50,100,100,150, "mid"),
+  "top" => MembershipFunctionTrapezoid.new(100,150,150,200, "top")
+  }
+  fs1 = FuzzySet.new("hoge", mfs1)
+
+
+  mfs2 = {
+  "low" => MembershipFunctionTrapezoid.new(  1, 50, 50,100, "low"),
+  "mid" => MembershipFunctionTrapezoid.new( 50,100,100,150, "mid"),
+  "top" => MembershipFunctionTrapezoid.new(100,150,150,200, "top")
+  }
+  fs2 = FuzzySet.new("pero", mfs2)
+
+
+  cmfs = {
+  "low" => MembershipFunctionTrapezoid.new(  1, 50, 50,100, "low"),
+  "mid" => MembershipFunctionTrapezoid.new( 50,100,100,150, "mid"),
+  "top" => MembershipFunctionTrapezoid.new(100,150,150,200, "top")
+  }
+  cfs = FuzzySet.new("ushiro", cmfs)
+
+  fiu = FuzzyInferenceUnit.new(fs1, fs2, fcp, cfs)
+  p fiu.call(50, 100)
 end

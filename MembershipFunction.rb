@@ -30,9 +30,13 @@ class MembershipFunction
     PARTITIONED_ELEMENT_NUMBER.times{ |idx|
       ret += idx.to_s + " : " + call(idx).to_s + "\n"
     }
-    ret
+    return ret
   end
 
+  def label
+    @name
+  end
+  
   def partition_range
     (@max_arg - @min_arg).to_f / MembershipFunction::PARTITIONED_ELEMENT_NUMBER
   end
@@ -45,8 +49,32 @@ class MembershipFunction
     call(to_idx_from_arg(x))
   end
   
+  def waited_area
+    ret = 0.0
+
+    PARTITIONED_ELEMENT_NUMBER.times{ |idx|
+      ret += call(idx).value * idx
+    }
+
+    return ret
+  end
+
+  def area
+    ret = 0.0
+
+    PARTITIONED_ELEMENT_NUMBER.times{ |idx|
+      ret += call(idx).value
+    }
+
+    return ret
+  end
+
   def centroid
-    waited_area / area
+    if area == 0
+      0.0
+    else
+      waited_area / area
+    end
   end
 
   def infimum(other)
@@ -57,18 +85,40 @@ class MembershipFunction
     ret.values.each_index{ |idx|
       ret.values[idx] = self_valued.values[idx].infimum(other_valued.values[idx])
     }
-  end
- 
-  def or(rhs)
-    ret = MembershipFunction.valued_zero
 
-    PARTITIONED_ELEMENT_NUMBER.each(0){ |iter|
-      ret.set_membership_value(iter, min(self.call(x), rhs))
+    return ret
+  end
+
+  def supremum(other)
+    self_valued = self.to_membership_function_valued
+    other_valued = other.to_membership_function_valued
+    ret = MembershipFunctionValued.zero
+
+    ret.values.each_index{ |idx|
+      ret.values[idx] = self_valued.values[idx].supremum(other_valued.values[idx])
     }
 
-    ret
+    return ret
   end
 
+  def alpha_cut(alpha)
+    ret = MembershipFunctionValued.zero
+        PARTITIONED_ELEMENT_NUMBER.times{ |iter|
+      ret.set_at(iter, [self.call(iter), alpha].min)
+    }
+
+    return ret
+  end
+
+  def alpha_cut(alpha)
+    ret = MembershipFunctionValued.zero
+        PARTITIONED_ELEMENT_NUMBER.times{ |iter|
+      ret.set_at(iter, [self.call(iter), alpha].min)
+    }
+
+    return ret
+  end
+ 
   def to_membership_function_valued
     ret = MembershipFunctionValued.zero
     
@@ -76,7 +126,7 @@ class MembershipFunction
       ret.set_at(iter, self.call(iter))
     }
     
-    ret
+    return ret
   end
 end
 
@@ -153,8 +203,8 @@ class MembershipFunctionValued < MembershipFunction
   def infimum(other)
     ret = MembershipFunctionValued.zero
 
-    ret.each_index{ |iter|
-      new_value = self.values[iter].infimum(other.values[iter])
+    ret.values.each_index{ |iter|
+      new_value = self.call(iter).infimum(other.call(iter))
       ret.set_at(iter, new_value)
     }
 
@@ -173,7 +223,7 @@ class MembershipFunctionZero < MembershipFunction
   end
   
   def call(x)
-    0
+    MembershipValue.zero
   end
 
   def area

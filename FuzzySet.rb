@@ -10,7 +10,7 @@ class FuzzySet
   end
 
   def each
-    @membership_functions.each{ |mf|
+    @membership_functions.each{ |k,mf|
       yield mf
     }
   end
