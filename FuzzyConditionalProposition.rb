@@ -12,15 +12,15 @@ end
 
 
 
-if __FILE__ = $0
+if __FILE__ == $0
   ct = Hash.new
   ct = {
-    "low" => { "low" => "low", "mid" => "low", "top" => "mid"}
-    "mid" => { "low" => "low", "mid" => "mid", "top" => "mid"}
+    "low" => { "low" => "low", "mid" => "low", "top" => "mid"},
+    "mid" => { "low" => "low", "mid" => "mid", "top" => "mid"},
     "top" => { "low" => "mid", "mid" => "top", "top" => "top"}
   }
   
   fcp = FuzzyConditionalProposition.new(ct)
-  p fcp.reference("low", "mid")
+  p fcp.reference("top", "mid")
   
 end
