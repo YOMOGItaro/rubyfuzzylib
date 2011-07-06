@@ -1,7 +1,7 @@
 require 'MembershipValue.rb'
 
 class MembershipFunction
-  PARTITIONED_ELEMENT_NUMBER = 32
+  PARTITIONED_ELEMENT_NUMBER = 256
 
   @name
   @min_arg
