@@ -1,7 +1,7 @@
 require 'MembershipValue.rb'
 
 class MembershipFunction
-  PARTITIONED_ELEMENT_NUMBER = 256
+  PARTITIONED_ELEMENT_NUMBER = 64
 
   @name
   @min_arg
@@ -11,7 +11,8 @@ class MembershipFunction
   def initialize(
                  name,
                  min_arg = MembershipValue::VALUE_MIN,
-                 max_arg = MembershipValue::VALUE_MAX)
+                 max_arg = MembershipValue::VALUE_MAX
+                 )
     @name = name
     @min_arg = min_arg
     @max_arg = max_arg
@@ -53,7 +54,7 @@ class MembershipFunction
     ret = 0.0
 
     PARTITIONED_ELEMENT_NUMBER.times{ |idx|
-      ret += call(idx).value * idx
+      ret += call(idx) * idx
     }
 
     return ret
@@ -63,7 +64,7 @@ class MembershipFunction
     ret = 0.0
 
     PARTITIONED_ELEMENT_NUMBER.times{ |idx|
-      ret += call(idx).value
+      ret += call(idx)
     }
 
     return ret
@@ -78,12 +79,9 @@ class MembershipFunction
   end
 
   def infimum(other)
-    #self_valued = self.to_membership_function_valued
-    #other_valued = other.to_membership_function_valued
     ret = MembershipFunctionValued.zero
 
     ret.values.each_index{ |idx|
-      #ret.values[idx] = self_valued.values[idx].infimum(other_valued.values[idx])
       ret.values[idx] = self.call(idx).infimum(other.call(idx))
     }
 
@@ -91,12 +89,10 @@ class MembershipFunction
   end
 
   def supremum(other)
-    #self_valued = self.to_membership_function_valued
-    #other_valued = other.to_membership_function_valued
     ret = MembershipFunctionValued.zero
 
     ret.values.each_index{ |idx|
-      ret.values[idx] = self.call(idx).supremum(other.call(idx))
+      ret.values[idx] = [self.call(idx), (other.call(idx))].max
     }
 
     return ret
@@ -144,7 +140,7 @@ class MembershipFunctionTrapezoid < MembershipFunction
   end
 
   def call(x)
-    MembershipValue.new(call_in(x))
+    call_in(x)
   end
 
   def call_in(x)
@@ -187,7 +183,7 @@ class MembershipFunctionValued < MembershipFunction
   def self.zero(name = "zero",
                 min_arg = MembershipValue::VALUE_MIN,
                 max_arg = MembershipValue::VALUE_MAX)
-    new(Array.new(PARTITIONED_ELEMENT_NUMBER, MembershipValue.zero), name, min_arg, max_arg)
+    new(Array.new(PARTITIONED_ELEMENT_NUMBER, MembershipValue::VALUE_MIN), name, min_arg, max_arg)
   end
 
   def set_at(index, value)

@@ -54,7 +54,7 @@ class FuzzyInferenceUnit
   end
 
   def generate_alpha_table(x1, x2)
-    alpha_table = Hash.new(MembershipValue.zero)
+    alpha_table = Hash.new(MembershipValue::VALUE_MIN)
 
     each_membership_function_couple{ |amf1, amf2, cmf| 
       alpha = [amf1.call(x1), amf2.call(x2)].min
@@ -144,7 +144,7 @@ end
 #fiu = YAML.load_file('fiu_sample.yaml')
 fiu.valued!
 
-p fiu.call(10, 10)
-#print fiu.to_gnuplot_data
+#p fiu.call(10, 10)
+fiu.to_gnuplot_data
 
 #end
